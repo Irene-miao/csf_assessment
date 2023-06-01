@@ -1,1 +1,14 @@
-<p>orders works!</p>
+<div *ngIf="order$ | async as o; else noOrders"> 
+    <h1>Orders for {{o.email}}</h1>
+    <div>
+       <p>Date: <span>{{o.date}}</span></p>
+       <p>Order Id: <span>{{o.orderId}}</span></p>
+       <p><span>{{o.total}}</span></p>
+    </div>
+    <div>
+        <button [routerLink]="['/']">Back to Ordering</button>
+    </div>
+</div>
+<ng-template #noOrders>
+    no orders
+</ng-template>

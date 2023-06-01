@@ -1,10 +1,14 @@
 package ibf2022.batch3.assessment.csf.orderbackend.respositories;
 
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
 import ibf2022.batch3.assessment.csf.orderbackend.models.PizzaOrder;
 import jakarta.json.Json;
@@ -24,9 +28,9 @@ public class OrdersRepository {
 		String crust = order.getThickCrust() ? "thick" : "thin";
 
 		JsonObject obj = Json.createObjectBuilder()
-		.add("_id", )
-		.add("date",)
-		.add("total", )
+		.add("_id", order.getOrderId())
+		.add("date", order.getDate())
+		.add("total", order.getTotal() )
 		.add("name", order.getName())
 		.add("email", order.getEmail())
 		.add("sauce", order.getSauce())
@@ -54,7 +58,24 @@ public class OrdersRepository {
 	//   Native MongoDB query here for getPendingOrdersByEmail()
 	public List<PizzaOrder> getPendingOrdersByEmail(String email) {
 
-		return null;
+		List<PizzaOrder> list = new ArrayList<>();
+
+		Query query = new Query();
+        query.addCriteria(Criteria.where("email").is(email));
+        List<Document> docs = template.find(query, Document.class, "orders");
+        System.out.printf("docs: %s\n", docs);
+        PizzaOrder o = new PizzaOrder();
+        for (Document doc : docs){
+            o.setOrderId(doc.getString("orderId"));
+			o.setDate((doc.getString("date")));
+			o.setTotal(Float.parseFloat(doc.getString("total")));
+			o.setName(doc.getString("name"));
+			o.setEmail(doc.getString("email"));
+
+			list.add(o);
+        }
+
+        return list;
 	}
 
 	// TODO: Task 7

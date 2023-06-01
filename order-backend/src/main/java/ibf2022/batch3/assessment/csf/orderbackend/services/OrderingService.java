@@ -1,5 +1,8 @@
 package ibf2022.batch3.assessment.csf.orderbackend.services;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,9 +77,19 @@ public class OrderingService {
     
 	 System.out.println(resp.getBody());
 
-		
-       
+	 String data = resp.getBody().toString();
+		String[] array = data.split(",");
 
+		for (String a : array) {
+			orderId = a;
+			date = a;
+			price = a;
+		}
+
+		
+		order.setOrderId(orderId);
+		order.setDate();
+		order.setTotal(Float.parseFloat(price));
 
 		 ordersRepo.add(order);
 		 pendingOrdersRepo.add(order);

@@ -20,7 +20,10 @@ public class OrderingService {
 	// WARNING: DO NOT CHANGE THE METHOD'S SIGNATURE
 	public PizzaOrder placeOrder(PizzaOrder order) throws OrderException {
 
-		return null;
+		 ordersRepo.add(order);
+		 pendingOrdersRepo.add(order);
+
+		 
 	}
 
 	// For Task 6

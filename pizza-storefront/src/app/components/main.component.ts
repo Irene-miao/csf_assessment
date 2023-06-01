@@ -1,11 +1,10 @@
 import { OnInit } from '@angular/core';
 import { inject } from '@angular/core';
-import { Inject } from '@angular/core';
 import { Component } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Observable } from 'rxjs';
 import { PizzaService } from '../pizza.service';
-
+import { Observable } from 'rxjs';
+import { Router } from '@angular/router'
 
 const SIZES: string[] = [
   "Personal - 6 inches",
@@ -29,8 +28,9 @@ export class MainComponent implements OnInit {
   toppingsArr!: FormArray
   fb = inject(FormBuilder)
   pizzaSvc = inject(PizzaService)
-
-
+  order$ !: Observable<any>
+router = inject(Router)
+email = ''
 
   Toppings: Array<any> = [
     { name: 'Chicken', value: 'chicken' },
@@ -72,8 +72,14 @@ export class MainComponent implements OnInit {
     process() {
       console.warn(this.form.value)
 
-      this.pizzaSvc.placeOrder(this.form.value);
-      
+      this.order$ = this.pizzaSvc.placeOrder(this.form.value);
+      this.order$.subscribe(value => console.warn(value))
+      if (this.email){
+        this.router.navigate(['/order'])
+      } else {
+        alert("error")
+      }
+     
     }
   
     

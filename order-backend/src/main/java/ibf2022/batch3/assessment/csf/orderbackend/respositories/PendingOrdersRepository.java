@@ -29,7 +29,7 @@ public class PendingOrdersRepository {
 
 		String json = obj.toString();
 
-		redisTemplate.opsForHash().put(PENDING_ORDER,  , json);
+		redisTemplate.opsForHash().put(PENDING_ORDER, order.getOrderId() , json);
 	}
 
 	// TODO: Task 7

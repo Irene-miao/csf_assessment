@@ -1,5 +1,7 @@
 package ibf2022.batch3.assessment.csf.orderbackend.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ibf2022.batch3.assessment.csf.orderbackend.models.PizzaOrder;
 import ibf2022.batch3.assessment.csf.orderbackend.services.OrderingService;
 import jakarta.json.Json;
+import jakarta.json.JsonObject;
 
 @Controller
 @CrossOrigin(origins="*")
@@ -30,30 +33,43 @@ private OrderingService orderSvc;
 @ResponseBody
 public ResponseEntity<String> postOrder(MultiValueMap<String, String> form) {
 	
+	String json = null;
 	String name = form.getFirst("name");
 	String email = form.getFirst("email");
 	String pizzaSize= form.getFirst("pizzaSize");
 	String base = form.getFirst("base");
 	String sauce = form.getFirst("sauce");
-	String toppings = form.getFirst("toppings");
+	List<String> toppings = form.get("toppings");
 	String comments = form.getFirst("comments");
 
 	System.out.println(pizzaSize);
 	Integer size = Integer.parseInt(pizzaSize.substring(pizzaSize.length()-7, pizzaSize.length()));
 	System.out.println(size);
 
+	boolean thickCrust = base == "thick" ? true : false;
+
+
 	PizzaOrder order = new PizzaOrder();
 	order.setName(name);
 	order.setEmail(email);
 	order.setSize(size);
-	order.setThickCrust();
+	order.setThickCrust(thickCrust);
 	order.setSauce(sauce);
 	order.setTopplings(toppings);
 	order.setComments(comments);
 
 
 	try {
-		orderSvc.placeOrder();
+		PizzaOrder o = orderSvc.placeOrder(order);
+		JsonObject obj = Json.createObjectBuilder()
+		.add("orderId", o.getOrderId())
+		.add("date", o.getDate().toString())
+		.add("total", o.getTotal())
+		.add("name", o.getName())
+		.add("email", o.getEmail())
+		.build();
+
+		json = obj.toString();
 	}catch (Exception ex) {
 		ex.printStackTrace();
 		return ResponseEntity.badRequest()
@@ -64,7 +80,7 @@ public ResponseEntity<String> postOrder(MultiValueMap<String, String> form) {
 
 	return ResponseEntity.status(201)
 	.contentType(MediaType.APPLICATION_JSON)
-	.body()
+	.body(json);
 
 }
 
